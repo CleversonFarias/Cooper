@@ -1,5 +1,6 @@
 package br.com.cleverson.cooper.pauta.domain;
 
+import br.com.cleverson.cooper.pauta.application.api.NovaPautaRequest;
 import lombok.Getter;
 import lombok.ToString;
 
@@ -20,4 +21,10 @@ public class Pauta {
     private UUID idAssociadoAutor;
     private LocalDateTime dataCriacao;
 
+    public Pauta(NovaPautaRequest novaPauta) {
+        this.titulo = novaPauta.getTitulo();
+        this.descricao = novaPauta.getDescricao();
+        this.idAssociadoAutor = novaPauta.getIdAssociadoAutor();
+        this.dataCriacao = LocalDateTime.now();
+    }
 }
