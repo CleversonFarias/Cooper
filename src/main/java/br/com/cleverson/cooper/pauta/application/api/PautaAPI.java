@@ -9,6 +9,6 @@ import javax.validation.Valid;
 @RequestMapping("/pauta")
 public interface PautaAPI {
     @PostMapping
-    @ResponseStatus(code = HttpStatus.ACCEPTED)
+    @ResponseStatus(code = HttpStatus.CREATED)
     PautaCadastradaResponse cadastraPauta(@RequestBody @Valid NovaPautaRequest novaPauta);
 }
