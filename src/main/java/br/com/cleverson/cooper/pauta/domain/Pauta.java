@@ -1,7 +1,9 @@
 package br.com.cleverson.cooper.pauta.domain;
 
 import br.com.cleverson.cooper.pauta.application.api.NovaPautaRequest;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import javax.persistence.*;
@@ -11,6 +13,7 @@ import java.util.UUID;
 @Getter
 @ToString
 @Entity
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Pauta {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
