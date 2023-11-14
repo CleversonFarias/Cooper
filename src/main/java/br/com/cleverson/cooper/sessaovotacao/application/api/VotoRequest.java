@@ -4,8 +4,6 @@ import br.com.cleverson.cooper.sessaovotacao.domain.OpcaoVoto;
 import lombok.Getter;
 import lombok.ToString;
 
-import java.security.PrivateKey;
-
 @Getter
 @ToString
 public class VotoRequest {

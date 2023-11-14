@@ -4,10 +4,15 @@ import br.com.cleverson.cooper.pauta.application.api.PautaService;
 import br.com.cleverson.cooper.pauta.domain.Pauta;
 import br.com.cleverson.cooper.sessaovotacao.application.api.SessaoAberturaRequest;
 import br.com.cleverson.cooper.sessaovotacao.application.api.SessaoAberturaResponse;
+import br.com.cleverson.cooper.sessaovotacao.application.api.VotoRequest;
+import br.com.cleverson.cooper.sessaovotacao.application.api.VotoResponse;
 import br.com.cleverson.cooper.sessaovotacao.domain.SessaoVotacao;
+import br.com.cleverson.cooper.sessaovotacao.domain.VotoPauta;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -23,5 +28,15 @@ public class SessaoVotacaoApplicationService implements SessaoVotacaoService {
         SessaoVotacao sessaoVotacao = sessaoVotacaoRepository.salva(new SessaoVotacao(sessaoAberturaRequest,pauta));
         log.info("´[finaliza] SessaoVotacaoApplicationService - abreSessao");
         return new SessaoAberturaResponse(sessaoVotacao);
+    }
+
+    @Override
+    public VotoResponse recebeVoto(UUID idSessao, VotoRequest novoVoto) {
+        log.info("´[inicio] SessaoVotacaoApplicationService - recebeVoto");
+        SessaoVotacao sessao = sessaoVotacaoRepository.buscaPorId(idSessao);
+        VotoPauta voto = sessao.recebeVoto(novoVoto);
+        sessaoVotacaoRepository.salva(sessao);
+        log.info("´[finaliza] SessaoVotacaoApplicationService - recebeVoto");
+        return new VotoResponse(voto);
     }
 }
