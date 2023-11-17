@@ -2,10 +2,7 @@ package br.com.cleverson.cooper.sessaovotacao.application.service;
 
 import br.com.cleverson.cooper.pauta.application.api.PautaService;
 import br.com.cleverson.cooper.pauta.domain.Pauta;
-import br.com.cleverson.cooper.sessaovotacao.application.api.SessaoAberturaRequest;
-import br.com.cleverson.cooper.sessaovotacao.application.api.SessaoAberturaResponse;
-import br.com.cleverson.cooper.sessaovotacao.application.api.VotoRequest;
-import br.com.cleverson.cooper.sessaovotacao.application.api.VotoResponse;
+import br.com.cleverson.cooper.sessaovotacao.application.api.*;
 import br.com.cleverson.cooper.sessaovotacao.domain.SessaoVotacao;
 import br.com.cleverson.cooper.sessaovotacao.domain.VotoPauta;
 import lombok.RequiredArgsConstructor;
@@ -38,5 +35,15 @@ public class SessaoVotacaoApplicationService implements SessaoVotacaoService {
         sessaoVotacaoRepository.salva(sessao);
         log.info("´[finaliza] SessaoVotacaoApplicationService - recebeVoto");
         return new VotoResponse(voto);
+    }
+
+    @Override
+    public ResultadoSessaoResponse obtemResultado(UUID idSessao) {
+        log.info("´[inicio] SessaoVotacaoApplicationService - obtemResultado");
+        SessaoVotacao sessao = sessaoVotacaoRepository.buscaPorId(idSessao);
+        ResultadoSessaoResponse resultado = sessao.resultadoSessao();
+        sessaoVotacaoRepository.salva(sessao);
+        log.info("´[finaliza] SessaoVotacaoApplicationService - obtemResultado");
+        return resultado;
     }
 }

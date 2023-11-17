@@ -1,6 +1,7 @@
 package br.com.cleverson.cooper.sessaovotacao.domain;
 
 import br.com.cleverson.cooper.pauta.domain.Pauta;
+import br.com.cleverson.cooper.sessaovotacao.application.api.ResultadoSessaoResponse;
 import br.com.cleverson.cooper.sessaovotacao.application.api.SessaoAberturaRequest;
 import br.com.cleverson.cooper.sessaovotacao.application.api.VotoRequest;
 import lombok.AccessLevel;
@@ -47,6 +48,7 @@ public class SessaoVotacao {
         this.votos = new HashMap<>();
     }
 
+
     public VotoPauta recebeVoto(VotoRequest votoRequest) {
         validaSessaoAberta(this);
         validaAssociado(votoRequest.getCpfAssociado());
@@ -56,18 +58,18 @@ public class SessaoVotacao {
     }
 
     private void validaSessaoAberta(SessaoVotacao sessaoVotacao) {
-      atualizaStatus();
-       if (this.status.equals(StatusSessaoVotacao.FECHADA)){
-          throw new RuntimeException("Sessão Está Fechada");
-       };
+        atualizaStatus();
+        if (this.status.equals(StatusSessaoVotacao.FECHADA)) {
+            throw new RuntimeException("Sessão Está Fechada");
+        }
     }
 
     private void atualizaStatus() {
-    if (this.status.equals(StatusSessaoVotacao.ABERTA)){
-        if (LocalDateTime.now().isAfter(this.momentoEncerramento)){
-            fechaSessão();
+        if (this.status.equals(StatusSessaoVotacao.ABERTA)) {
+            if (LocalDateTime.now().isAfter(this.momentoEncerramento)) {
+                fechaSessão();
+            }
         }
-    }
     }
 
     private void fechaSessão() {
@@ -75,8 +77,31 @@ public class SessaoVotacao {
     }
 
     private void validaAssociado(String cpfAssociado) {
-         if (this.votos.containsKey(cpfAssociado)) {
-             new RuntimeException("Associado Já Votou Nessa Sessão!");
-         }
+        if (this.votos.containsKey(cpfAssociado)) {
+           throw new RuntimeException("Associado Já Votou Nessa Sessão!");
+        }
+    }
+
+    public ResultadoSessaoResponse resultadoSessao() {
+        atualizaStatus();
+        return new ResultadoSessaoResponse(this);
+    }
+
+    public Long getTotalVotos() {
+        return Long.valueOf(this.votos.size());
+    }
+
+    public Long getTotalSim() {
+        return calculaVotosPorOpcao(OpcaoVoto.SIM);
+    }
+
+    public Long getTotalNao() {
+        return calculaVotosPorOpcao(OpcaoVoto.NAO);
+    }
+
+    private Long calculaVotosPorOpcao(OpcaoVoto opcao) {
+        return votos.values().stream()
+                .filter(voto -> voto.opcaoIgual(opcao) )
+                .count();
     }
 }
