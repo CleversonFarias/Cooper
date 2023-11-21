@@ -1,3 +1,7 @@
 server:
   servlet:
     context-path: /cooper
+
+logging:
+  level:
+    br.com.cleverson: ${LOG_LEVEL:DEBUG}

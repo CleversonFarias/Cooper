@@ -4,6 +4,7 @@ import br.com.cleverson.cooper.pauta.domain.Pauta;
 import br.com.cleverson.cooper.sessaovotacao.application.api.ResultadoSessaoResponse;
 import br.com.cleverson.cooper.sessaovotacao.application.api.SessaoAberturaRequest;
 import br.com.cleverson.cooper.sessaovotacao.application.api.VotoRequest;
+import br.com.cleverson.cooper.sessaovotacao.application.service.AssociadoService;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -49,9 +50,9 @@ public class SessaoVotacao {
     }
 
 
-    public VotoPauta recebeVoto(VotoRequest votoRequest) {
+    public VotoPauta recebeVoto(VotoRequest votoRequest, AssociadoService associadoService) {
         validaSessaoAberta(this);
-        validaAssociado(votoRequest.getCpfAssociado());
+        validaAssociado(votoRequest.getCpfAssociado(), associadoService);
         VotoPauta voto = new VotoPauta(this, votoRequest);
         votos.put(votoRequest.getCpfAssociado(), voto);
         return voto;
@@ -76,7 +77,12 @@ public class SessaoVotacao {
         this.status = StatusSessaoVotacao.FECHADA;
     }
 
-    private void validaAssociado(String cpfAssociado) {
+    private void validaAssociado(String cpfAssociado, AssociadoService associadoService) {
+        associadoService.validaAssociadoAptoVoto(cpfAssociado);
+        validaVotoDuplicado(cpfAssociado);
+    }
+
+    private void validaVotoDuplicado(String cpfAssociado) {
         if (this.votos.containsKey(cpfAssociado)) {
            throw new RuntimeException("Associado Já Votou Nessa Sessão!");
         }
