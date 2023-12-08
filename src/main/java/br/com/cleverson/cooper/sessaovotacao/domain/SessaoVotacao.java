@@ -50,31 +50,32 @@ public class SessaoVotacao {
     }
 
 
-    public VotoPauta recebeVoto(VotoRequest votoRequest, AssociadoService associadoService) {
-        validaSessaoAberta(this);
+    public VotoPauta recebeVoto(VotoRequest votoRequest, AssociadoService associadoService, PublicadorResultadoSessao publicadorResultadoSessao) {
+        validaSessaoAberta(this, publicadorResultadoSessao);
         validaAssociado(votoRequest.getCpfAssociado(), associadoService);
         VotoPauta voto = new VotoPauta(this, votoRequest);
         votos.put(votoRequest.getCpfAssociado(), voto);
         return voto;
     }
 
-    private void validaSessaoAberta(SessaoVotacao sessaoVotacao) {
-        atualizaStatus();
+    private void validaSessaoAberta(SessaoVotacao sessaoVotacao, PublicadorResultadoSessao publicadorResultadoSessao) {
+        atualizaStatus(publicadorResultadoSessao);
         if (this.status.equals(StatusSessaoVotacao.FECHADA)) {
             throw new RuntimeException("Sessão Está Fechada");
         }
     }
 
-    private void atualizaStatus() {
+    private void atualizaStatus(PublicadorResultadoSessao publicadorResultadoSessao) {
         if (this.status.equals(StatusSessaoVotacao.ABERTA)) {
             if (LocalDateTime.now().isAfter(this.momentoEncerramento)) {
-                fechaSessão();
+                fechaSessão(publicadorResultadoSessao);
             }
         }
     }
 
-    private void fechaSessão() {
+    private void fechaSessão(PublicadorResultadoSessao publicadorResultadoSessao) {
         this.status = StatusSessaoVotacao.FECHADA;
+        publicadorResultadoSessao.publica(new ResultadoSessaoResponse(this));
     }
 
     private void validaAssociado(String cpfAssociado, AssociadoService associadoService) {
@@ -88,8 +89,8 @@ public class SessaoVotacao {
         }
     }
 
-    public ResultadoSessaoResponse resultadoSessao() {
-        atualizaStatus();
+    public ResultadoSessaoResponse resultadoSessao(PublicadorResultadoSessao publicadorResultadoSessao) {
+        atualizaStatus(publicadorResultadoSessao);
         return new ResultadoSessaoResponse(this);
     }
 
